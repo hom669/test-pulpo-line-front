@@ -4,6 +4,7 @@ export default createStore({
   state: {
     tab: 1,
     refreshComponent: false,
+    isAuthenticated: false,
     userConnect: {
       userId: null,
       name: null
@@ -21,6 +22,9 @@ export default createStore({
     setRefreshComponent(state, refreshComponent) {
       state.refreshComponent = refreshComponent;
     },
+    setAuthentication(state, status) {
+      state.isAuthenticated = status;
+    },
   },
   actions: {
     updateUserConnect({ commit }, { key, value }) {
@@ -29,8 +33,11 @@ export default createStore({
     }
   },
   getters: {
-    gettUserConnect(state) {
+    getUserConnect(state) {
       return state.userConnect;
-    }
+    },
+    isAuthenticated(state) {
+      return state.isAuthenticated;
+    },
   }
 });

@@ -124,7 +124,7 @@ const register = async () => {
       email.value,
       password.value
     );
-    if (!register.response.data.errors) {
+    if (!register?.response?.data.errors) {
       login();
     } else {
       // Aquí se manejar el error, por ejemplo, mostrar un mensaje al usuario.
@@ -143,6 +143,7 @@ const login = async () => {
     const userLogin = await AuthService.login(email.value, password.value);
     setCookie("sessionId", userLogin.authorization.token);
     localStorageService.setUser(userLogin.user);
+    store.commit('setAuthentication', true);
     store.commit("setRefreshComponent", true);
     router.push("/currency-converter");
 

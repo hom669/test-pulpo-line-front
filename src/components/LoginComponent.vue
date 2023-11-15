@@ -60,6 +60,7 @@ const login = async () => {
     const userLogin = await AuthService.login(email.value, password.value);
     setCookie('sessionId', userLogin.authorization.token);
     localStorageService.setUser(userLogin.user);
+    store.commit('setAuthentication', true);
     store.commit('setRefreshComponent', true);
     redirectToCurrencyConverter();
 
@@ -67,6 +68,7 @@ const login = async () => {
     // se redirigira al usuario o realizar otras acciones según tu lógica de aplicación.
 
   } catch (error) {
+    store.commit('setAuthentication', false);
     console.log(error);
     // Aquí se maneja el error, por ejemplo, mostrar un mensaje al usuario.
     errorValidation.value = "Usario y/o Contraseña Incorrectos";
@@ -87,6 +89,7 @@ const togglePasswordVisibility = () => {
 onMounted(() => {
   store.commit('setTab', 1);
   localStorageService.setUser(null);
+  store.commit('setAuthentication', false);
 });
 
 </script>
