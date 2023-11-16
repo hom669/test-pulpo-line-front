@@ -41,9 +41,10 @@ class CurrencyConverterService {
 
       const headers = this.getHeadersWithToken();
       const userConnect = localStorageService.getUser();
+      const amountFormat = parseInt(amount.replace(/,/g, ''), 10);
 
       const response = await axios.post(`${API_ENDPOINT}/currency-convert`, {
-        amount: amount.replace(',', ''),
+        amount: amountFormat,
         fromCountry: fromCountry,
         toCountry: toCountry,
         userConnect: userConnect
