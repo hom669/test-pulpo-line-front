@@ -115,8 +115,6 @@
           icon="mdi-cash-multiple"
           prominent
         >
-          Sr, {{ userConnect.name }}
-          <br />
           <h3>
             {{ infoFromCurrency.symbol }} {{ amount }}
             {{ infoFromCurrency.currency_name }} =

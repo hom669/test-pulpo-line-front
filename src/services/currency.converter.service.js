@@ -2,6 +2,7 @@ import axios from 'axios';
 import { API_ENDPOINT } from '@/config';
 import { getCookie } from '@/utils/cookieUtils.js';
 import localStorageService from '@/services/localStorageService';
+import authService from './auth.service';
 
 class CurrencyConverterService {
 
@@ -40,7 +41,7 @@ class CurrencyConverterService {
     try {
 
       const headers = this.getHeadersWithToken();
-      const userConnect = localStorageService.getUser();
+      const userConnect = authService.getUserLogged();
       const amountFormat = parseInt(amount.replace(/,/g, ''), 10);
 
       const response = await axios.post(`${API_ENDPOINT}/currency-convert`, {

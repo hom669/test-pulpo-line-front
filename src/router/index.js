@@ -1,6 +1,6 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
-import store from '@/store';
+import authService from '@/services/auth.service';
 
 const routes = [
   {
@@ -14,6 +14,14 @@ const routes = [
         // this generates a separate chunk (Home-[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('@/views/session/LoginView.vue'),
+      },
+      {
+        path: 'register-encounter',
+        name: 'Registros Encuentro de Oracion',
+        // route level code-splitting
+        // this generates a separate chunk (Home-[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('@/views/session/RegisterView.vue'),
       },
       {
         path: '/login',
@@ -49,20 +57,18 @@ const router = createRouter({
   routes,
 })
 
-// Guardia de navegación para verificar la autenticación
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    // Verificar si el usuario está autenticado
-    console.log(store.getters.isAuthenticated);
-    if (!store.getters.isAuthenticated) {
-      // No está autenticado, redirigir al inicio de sesión
-      next('/');
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // Esta ruta requiere autenticación
+    if (!authService.isAuthenticated()) {
+      // Usuario no autenticado, redirige a la ruta de inicio de sesión
+      next('/login');
     } else {
-      // Está autenticado, permitir el acceso a la ruta
+      // Usuario autenticado, permite el acceso a la ruta
       next();
     }
   } else {
-    // La ruta no requiere autenticación, permitir el acceso
+    // Esta ruta no requiere autenticación, permite el acceso sin verificar
     next();
   }
 });

@@ -6,34 +6,35 @@
         aspect-ratio="1/1"
         cover
         src="../../assets/pulpo-logo.png"
+        class="ml-16"
       />
-
-      <v-toolbar-title><h3>{{ title }}</h3></v-toolbar-title>
-
+      <v-toolbar-title v-if="routeNow === '/register-encounter'"><h3>{{ title }}</h3></v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-tabs
-        v-if="!isAuthenticated"
-        v-model="tab"
-        color="deep-purple-accent-4"
-        align-tabs="end"
-        height="5.5rem">
-        <v-tab
-          @click="handleItemClick(item)"
+      <div v-if="routeNow !== '/register-encounter'">
+        <v-tabs
+          v-if="!userLogged"
           v-model="tab"
           color="deep-purple-accent-4"
           align-tabs="end"
-          v-for="item in items"
-          :key="item"
-          :value="item.value"
-          >{{ item.title }}
-        </v-tab>
-      </v-tabs>
-      <div v-else>
-        <v-row align="center" justify="center">
-          <v-col cols="auto">
-            <v-btn icon="mdi-exit-to-app" size="x-large" @Click="logout"></v-btn>
-          </v-col>
-        </v-row>
+          height="5.5rem">
+          <v-tab
+            @click="handleItemClick(item)"
+            v-model="tab"
+            color="deep-purple-accent-4"
+            align-tabs="end"
+            v-for="item in items"
+            :key="item"
+            :value="item.value"
+            >{{ item.title }}
+          </v-tab>
+        </v-tabs>
+        <div v-else>
+          <v-row align="center" justify="center">
+            <v-col cols="auto">
+              <v-btn icon="mdi-exit-to-app" size="x-large" @Click="logout"></v-btn>
+            </v-col>
+          </v-row>
+        </div>
       </div>
     </v-toolbar>
     <v-window v-model="tab">
@@ -45,7 +46,7 @@
 </template>
 
 <script>
-import localStorageService from '@/services/localStorageService';
+import AuthService from '@/services/auth.service';
 
 export default {
   data() {
@@ -57,8 +58,14 @@ export default {
         { value: 1, title: "Iniciar Session" },
         { value: 2, title: "Registrarse" },
       ],
-      title: "Conversión de Divisas",
+      title: "Registro Para Encuentro de Oración",
+      routeNow: this.$router.currentRoute.value.fullPath
     };
+  },
+  computed: {
+    userLogged() {
+      return AuthService.getUserLogged();
+    }
   },
   methods: {
     handleItemClick(item) {
@@ -75,34 +82,33 @@ export default {
       localStorage.clear();
       document.cookie = `sessionId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       this.$store.commit('setAuthentication', false);
+      AuthService.deleteUserLogged();
       this.isAuthenticated = false;
       this.userConnect = null;
-      this.$router.push("/login");
+      window.location.href = "/login";
+      // this.$router.push("/login");
     }
   },
   watch: {
     '$store.state.tab'(newValue) {
-      console.log('Valor del store.someValue cambió:', newValue);
       this.tab = newValue;
-      this.isAuthenticated = this.$store.state.isAuthenticated;
-    },
-    'localStorageService.getUser'() {
-      this.userConnect = JSON.parse(localStorageService.getUser());
       this.isAuthenticated = this.$store.state.isAuthenticated;
     },
     '$store.state.refreshComponent'(newValue) {
       console.log('Valor del Refresh cambió:', newValue);
+      this.userConnect = AuthService.getUserLogged();
       this.$store.commit('setRefreshComponent', true);
-      this.$nextTick(() => {
-        this.userConnect = localStorageService.getUser();
-        this.isAuthenticated = this.$store.state.isAuthenticated;
-      });
+    },
+    '$store.state.userLogged'() {
+      console.log('AQUUUU');
+      // La cookie userLogged ha cambiado, realiza las acciones necesarias aquí
+      this.userConnect = AuthService.getUserLogged();
     },
   },
   onMounted() {
-    console.log('AQUIII', this.$store.state.isAuthenticated);
     this.isAuthenticated = this.$store.state.isAuthenticated;
     this.userConnect = this.$store.state.getUserConnect;
+    this.routeNow = this.$router.currentRoute.value.fullPath;
   }
 };
 </script>

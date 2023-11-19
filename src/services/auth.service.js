@@ -1,7 +1,27 @@
 import axios from 'axios';
+import Cookies from "js-cookie";
 import { API_ENDPOINT } from '@/config';
 
 class AuthService {
+  setUserLogged(userLogged) {
+    Cookies.set("userLogged", userLogged);
+  }
+
+  getUserLogged() {
+    return Cookies.get("userLogged");
+  }
+
+  isAuthenticated() {
+    if (this.getUserLogged) {
+      console.log('AQUIII');
+      return true;
+    }
+    return false;
+  }
+
+  deleteUserLogged() {
+    Cookies.remove('userLogged');
+  }
 
   async login(email, password) {
     try {

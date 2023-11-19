@@ -25,14 +25,11 @@
 <script setup>
 import AuthService from '@/services/auth.service';
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { setCookie, setObjectCookie } from '@/utils/cookieUtils.js';
 import localStorageService from '@/services/localStorageService';
 
 const store = useStore();
-
-const router = useRouter();
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
@@ -59,7 +56,9 @@ const login = async () => {
   try {
     const userLogin = await AuthService.login(email.value, password.value);
     setCookie('sessionId', userLogin.authorization.token);
-    localStorageService.setUser(userLogin.user);
+    console.log(userLogin.user.id);
+    const idUser = userLogin.user.id;
+    AuthService.setUserLogged(idUser);
     store.commit('setAuthentication', true);
     store.commit('setRefreshComponent', true);
     redirectToCurrencyConverter();
@@ -79,7 +78,8 @@ const login = async () => {
 
 const redirectToCurrencyConverter = () => {
   // Aquí se implementara la lógica para redirigir a la página de registro.
-  router.push('/currency-converter');
+  // router.push('/currency-converter');
+  window.location.href = "/currency-converter";
 };
 
 const togglePasswordVisibility = () => {
